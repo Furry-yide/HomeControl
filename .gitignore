@@ -1,0 +1,15 @@
+# 提交代码到github仓库，用流水线方式打包镜像
+# 提交时忽略的文件
+.venv/
+.idea/
+.vscode/
+*.pyc
+*.db
+*.asc
+*.key
+*.pem
+*.env.local
+vendor/
+/temp/
+.VSCodeCounter/
+/dist/
