@@ -17,20 +17,16 @@
 
 ## 数据库设计
 
-| 名称               | 类型     | 事例参数       | 备注              |
-|------------------|--------|------------|-----------------|
-| id               | int    | 1          | 证明身份的唯一数值       |
-| account          | string | Furry-yide | 账号名称            |
-| password         | string | Dede200822 | 登陆密码            |
-| registrationTime | int    | 1742659200 | 注册的时间(使用Unix存储) |
-| loginTime        | int    | 1742659200 | 登陆时间(使用Unix存储)  |
-| privileges       | int    | 4          | 用户权限等级          |
-
-[//]: # (| voucher          | string |            |                 |)
-> Tips: \
-> 在之后因为安全需要，会涉及到用户唯一凭证，目前在数据库中设计时，暂时不包含凭证字段 \
-> 采用 `JWT` 以及 `GPG密钥` 进行凭证的构建
-
+| 名称               | 类型     | 事例参数                       | 备注              |
+|------------------|--------|----------------------------|-----------------|
+| id               | int    | 1                          | 证明身份的唯一数值       |
+| account          | string | Furry-yide                 | 账号名称            |
+| password         | string | Dede200822                 | 登陆密码            |
+| registrationTime | int    | 1742659200                 | 注册的时间(使用Unix存储) |
+| loginTime        | int    | 1742659200                 | 登陆时间(使用Unix存储)  |
+| privileges       | int    | 4                          | 用户权限等级          |
+| condition        | int    | 0                          | 状态码(0启用，1禁用)    |
+| voucher          | string | T32AVdjh1aIi85OpS3DrOXCbYu | 身份凭证            |
 
 ## 请求数据
 | 名称               | 类型     | 事例参数       | 备注              |
@@ -43,11 +39,53 @@
 
 
 ## 响应数据
-| 名称               | 类型     | 事例参数       | 备注              |
-|------------------|--------|------------|-----------------|
-| id               | int    | 1          | 证明身份的唯一数值       |
-| msg              | string | OK         | 额外备注            |
-| account          | string | Furry-yide | 账号名称            |
-| registrationTime | int    | 1742659200 | 注册的时间(使用Unix存储) |
-| loginTime        | int    | 1742659200 | 登陆时间(使用Unix存储)  |
-| privileges       | int    | 1          | 用户权限等级          |
+| 名称               | 类型     | 事例参数                       | 备注              |
+|------------------|--------|----------------------------|-----------------|
+| code             | string | 1200                       | 返回码             |
+| msg              | string | OK                         | 额外备注            |
+| id               | int    | 1                          | 证明身份的唯一数值       |
+| account          | string | Furry-yide                 | 账号名称            |
+| registrationTime | int    | 1742659200                 | 注册的时间(使用Unix存储) |
+| loginTime        | int    | 1742659200                 | 登陆时间(使用Unix存储)  |
+| privileges       | int    | 1                          | 用户权限等级          |
+| token            | string | T32AVdjh1aIi85OpS3DrOXCbYu | 用户身份鉴权          |
+
+<hr>
+
+# 身份鉴权
+用于验证用户ToKen是否有效
+
+## 请求数据
+| 名称      | 类型     | 事例参数                       | 备注     |
+|---------|--------|----------------------------|--------|
+| account | string | Furry-yide                 | 账号名称   |
+| token   | string | T32AVdjh1aIi85OpS3DrOXCbYu | 用户身份鉴权 |
+
+## 响应数据 
+| 名称             | 类型     | 事例参数                       | 备注                    |
+|----------------|--------|----------------------------|-----------------------|
+| code           | string | 1200                       | 返回码                   |
+| msg            | string | OK                         | 额外备注                  |
+| token          | string | T32AVdjh1aIi85OpS3DrOXCbYu | 用户身份鉴权                |
+| expirationTime | int    | 3600                       | 过期剩余时间(每小时将更新一次token) |
+
+<hr>
+
+# 执行行为
+设定每个用户可执行的行为与事件
+
+## 请求数据
+| 名称      | 类型     | 事例参数                       | 备注     |
+|---------|--------|----------------------------|--------|
+| msg     | string | OK                         | 额外备注   |
+| token   | string | T32AVdjh1aIi85OpS3DrOXCbYu | 用户身份鉴权 |
+| actions | string | openDoor                   | 事件执行   |
+
+
+> 将 `Token` 放在请求头（如 Authorization: Bearer <token>）
+ 
+## 响应数据
+| 名称   | 类型     | 事例参数 | 备注   |
+|------|--------|------|------|
+| code | string | 1200 | 返回码  |
+| msg  | string | OK   | 额外备注 |
